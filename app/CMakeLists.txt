@@ -1,0 +1,6 @@
+add_executable(main main.cpp)
+target_compile_features(main PRIVATE cxx_std_17)
+target_link_libraries(main PRIVATE viewer)
+target_link_libraries(main PRIVATE dataloader)
+target_include_directories(main PRIVATE ${PROJECT_SOURCE_DIR}/dataloader/)
+target_include_directories(main PRIVATE ${PROJECT_SOURCE_DIR}/viewer/)
