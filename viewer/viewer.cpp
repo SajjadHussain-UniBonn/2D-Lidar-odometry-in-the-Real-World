@@ -76,7 +76,19 @@ const std::vector<Eigen::Vector2d> &transformed_pc)
   double error = 0;
   for(size_t i=0; i<target_pc.size();i++)
   {
-    error += (target_pc[i] - transformed_pc[i]).norm();
+    error += (target_pc[i] - transformed_pc[i]).squaredNorm();
   }
   return error;
+}
+std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> CreateGridMap(const std::vector<Eigen::Vector2d> &pcd, 
+double grid_size)
+{
+  std::unordered_map<GridIndex, std::vector<Eigen::Vector2d>> grid;
+  for (const auto &point : pcd) 
+  {
+    GridIndex index {static_cast<int>(point[0] / grid_size),
+    static_cast<int>(point[1] / grid_size)};
+    grid[index].push_back(point);
+  }
+  return grid;
 }
