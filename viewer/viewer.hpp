@@ -37,3 +37,5 @@ double ComputeError(const std::vector<Eigen::Vector2d> &target_pc,
 const std::vector<Eigen::Vector2d> &transformed_pc);
 std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> CreateGridMap(const std::vector<Eigen::Vector2d> &pcd, 
 double pixel_size);
+std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> FindNearestNeighbors(const std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> &grid, 
+const std::vector<Eigen::Vector2d> &source_pc, double grid_size);

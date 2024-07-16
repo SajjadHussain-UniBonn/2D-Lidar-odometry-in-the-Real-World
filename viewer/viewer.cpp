@@ -92,3 +92,41 @@ double grid_size)
   }
   return grid;
 }
+std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> FindNearestNeighbors(const std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> &grid, 
+const std::vector<Eigen::Vector2d> &source_pc, double grid_size)
+{
+  std::vector<Eigen::Vector2d> source_correspondences(source_pc.size());
+  std::vector<Eigen::Vector2d> target_correspondences(source_pc.size());
+  double minimum_distance = INFINITY;
+  double distance = 0;
+  Eigen::Vector2d nearest_neighbor = Eigen::Vector2d::Zero();
+  for(const auto &query_point:source_pc)
+  {
+    GridIndex query_index {static_cast<int>(query_point[0] / grid_size), 
+    static_cast<int>(query_point[1] / grid_size)};
+    // Iterate through the current cell and adjacent cells
+    for (int dx = -1; dx <= 1; ++dx) 
+    {
+      for (int dy = -1; dy <= 1; ++dy) 
+      {
+        GridIndex neighbor_index {query_index.x + dx, query_index.y + dy};
+        // Check if the neighbor cell exists in the grid map
+        if (grid.find(neighbor_index) != grid.end()) 
+        {
+          for (const auto &point : grid.at(neighbor_index)) 
+          {
+            distance = (point - query_point).norm();
+            if (distance < minimum_distance) 
+            {
+              minimum_distance = distance;
+              nearest_neighbor = point;
+            }
+          }
+        }
+      }
+    }
+    source_correspondences.emplace_back(query_point);
+    target_correspondences.emplace_back(nearest_neighbor);
+  }
+  return  std::make_tuple(source_correspondences,target_correspondences);
+}
