@@ -44,7 +44,7 @@ const std::vector<Eigen::Vector2d> &target)
   Eigen::Vector2d target_mean = ComputeMean(target);
   Eigen::Vector2d source_mean = ComputeMean(source);
   Eigen::Matrix2d covariance_matrix = ComputeCovariance(source,target,source_mean,target_mean);
-  Eigen::JacobiSVD<Eigen::Matrix2d> svd(covariance_matrix,Eigen::ComputeThinU | Eigen::ComputeThinV);
+  Eigen::JacobiSVD<Eigen::Matrix2d> svd(covariance_matrix,Eigen::ComputeFullU | Eigen::ComputeFullV);
   Eigen::Matrix2d U = svd.matrixU();
   Eigen::Matrix2d V = svd.matrixV();
   Eigen::Matrix2d rotation_matrix = V*(U.transpose());
@@ -129,4 +129,54 @@ const std::vector<Eigen::Vector2d> &source_pc, double grid_size)
     target_correspondences.emplace_back(nearest_neighbor);
   }
   return  std::make_tuple(source_correspondences,target_correspondences);
+}
+Eigen::Matrix3d ICP(const std::vector<Eigen::Vector2d> &source, 
+const std::vector<Eigen::Vector2d> &target,const double &grid_size)
+{
+  int maximum_iteration = 50;
+  int iteration_counter = 0;
+  double old_error = INFINITY;
+  double error = INFINITY;
+  Eigen::Matrix3d final_transformation_matrix = Eigen::Matrix3d::Identity();
+  Eigen::Matrix3d current_tranformation_matrix = Eigen::Matrix3d::Identity();
+  std::vector<Eigen::Vector2d> source_correspondences(source.size());
+  std::vector<Eigen::Vector2d> target_correspondences(source.size());
+  std::vector<Eigen::Vector2d> transformed_pc(source.size());
+  std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> grid_map = CreateGridMap(target,grid_size);
+  while(true)
+  {
+    iteration_counter++;
+    std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> nearest_neighbors = 
+    FindNearestNeighbors(grid_map,source,grid_size);
+    source_correspondences = std::get<0>(nearest_neighbors);
+    target_correspondences = std::get<1>(nearest_neighbors);
+    current_tranformation_matrix = ComputeTransformation(source_correspondences,target_correspondences);
+    final_transformation_matrix = current_tranformation_matrix*final_transformation_matrix;
+    transformed_pc = ApplyTransformation(source_correspondences,final_transformation_matrix);
+    error = ComputeError(target_correspondences,transformed_pc);
+    if(error==old_error || iteration_counter==maximum_iteration)
+    {
+      return final_transformation_matrix;
+    }
+    old_error = error;
+    source_correspondences.clear();
+    target_correspondences.clear();
+  }
+}
+std::vector<Eigen::Vector2d> ConcatenatePointClouds(std::vector<Eigen::Vector2d> &first, 
+const std::vector<Eigen::Vector2d> &second)
+{
+  first.insert(first.end(),second.begin(),second.end());
+  return first;
+}
+std::vector<Eigen::Vector2d> RegisterPointClouds(const std::vector<Eigen::Vector2d> &source,
+std::vector<Eigen::Vector2d> &target,const double &grid_size)
+{
+
+  std::vector<Eigen::Vector2d> transformed_PC(source.size());
+  std::vector<Eigen::Vector2d> registered_PCs;
+  Eigen::Matrix3d transformation_matrix = ICP(source,target,grid_size);
+  transformed_PC = ApplyTransformation(source,transformation_matrix);
+  registered_PCs = ConcatenatePointClouds(target,transformed_PC);
+  return registered_PCs;
 }

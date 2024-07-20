@@ -12,22 +12,25 @@ int main()
     //Access one point cloud at a time from the list
     std::vector<Eigen::Vector2d> target_pc = ls_dataset[0];
     std::vector<Eigen::Vector2d> source_pc = ls_dataset[1];
+    const double grid_size = 0.5;
+    std::vector<Eigen::Vector2d> reg_pc = RegisterPointClouds(source_pc,target_pc,grid_size);
+
     //View single Point cloud
-    // viewCloud(pointcloud_points);
+    viewCloud(reg_pc);
     //Compute mean of Point clouds
-    Eigen::Vector2d target_mean = ComputeMean(target_pc);
-    Eigen::Vector2d source_mean = ComputeMean(source_pc);
-    std::cout << "Mean point: (" << target_mean.x() << ", " << target_mean.y() << ")" << std::endl;
+    //Eigen::Vector2d target_mean = ComputeMean(target_pc);
+    //Eigen::Vector2d source_mean = ComputeMean(source_pc);
+    //std::cout << "Mean point: (" << target_mean.x() << ", " << target_mean.y() << ")" << std::endl;
     //Compute Covariance Matrix
-    Eigen::Matrix2d covariance_matrix = ComputeCovariance(source_pc,target_pc,source_mean,target_mean);
+    //Eigen::Matrix2d covariance_matrix = ComputeCovariance(source_pc,target_pc,source_mean,target_mean);
    // Iterate through rows
-    for (int i = 0; i < covariance_matrix.rows(); ++i) {
+    /*for (int i = 0; i < covariance_matrix.rows(); ++i) {
         // Iterate through columns
         for (int j = 0; j < covariance_matrix.cols(); ++j) {
             std::cout << covariance_matrix(i, j) << " ";
         }
         // Move to the next line after each row
         std::cout << std::endl; 
-    }
+    }*/
     return 0;
 }

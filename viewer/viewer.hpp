@@ -38,4 +38,10 @@ const std::vector<Eigen::Vector2d> &transformed_pc);
 std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> CreateGridMap(const std::vector<Eigen::Vector2d> &pcd, 
 double pixel_size);
 std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> FindNearestNeighbors(const std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> &grid, 
-const std::vector<Eigen::Vector2d> &source_pc, double grid_size);
+const std::vector<Eigen::Vector2d> &source_pc, double &grid_size);
+Eigen::Matrix3d ICP(const std::vector<Eigen::Vector2d> &source, 
+const std::vector<Eigen::Vector2d> &target,const double &grid_size);
+std::vector<Eigen::Vector2d> ConcatenatePointClouds(std::vector<Eigen::Vector2d> &first, 
+const std::vector<Eigen::Vector2d> &second);
+std::vector<Eigen::Vector2d> RegisterPointClouds(const std::vector<Eigen::Vector2d> &source, 
+std::vector<Eigen::Vector2d> &target,const double &grid_size);
