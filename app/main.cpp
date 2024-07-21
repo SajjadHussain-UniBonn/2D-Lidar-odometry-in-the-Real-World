@@ -10,12 +10,10 @@ int main()
     //Read laserscan data directory in a list
     LaserScanDataset ls_dataset(data_root_dir);
     //Access one point cloud at a time from the list
-    std::vector<Eigen::Vector2d> target_pc = ls_dataset[0];
-    std::vector<Eigen::Vector2d> source_pc = ls_dataset[1];
+    const std::vector<Eigen::Vector2d> target_pc = ls_dataset[0];
+    const std::vector<Eigen::Vector2d> source_pc = ls_dataset[1];
     const double grid_size = 0.5;
     std::vector<Eigen::Vector2d> reg_pc = RegisterPointClouds(source_pc,target_pc,grid_size);
-
-    //View single Point cloud
     viewCloud(reg_pc);
     //Compute mean of Point clouds
     //Eigen::Vector2d target_mean = ComputeMean(target_pc);
@@ -32,5 +30,6 @@ int main()
         // Move to the next line after each row
         std::cout << std::endl; 
     }*/
+    std::cout<<"Process Completed"<<std::endl;
     return 0;
 }

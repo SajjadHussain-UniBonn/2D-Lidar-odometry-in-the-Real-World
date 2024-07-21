@@ -3,7 +3,6 @@
 #include <vector>
 #include <unordered_map>
 
-
 // Define a GridIndex structure to represent grid cell indices
 struct GridIndex 
 {
@@ -41,7 +40,7 @@ std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> FindNeare
 const std::vector<Eigen::Vector2d> &source_pc, double &grid_size);
 Eigen::Matrix3d ICP(const std::vector<Eigen::Vector2d> &source, 
 const std::vector<Eigen::Vector2d> &target,const double &grid_size);
-std::vector<Eigen::Vector2d> ConcatenatePointClouds(std::vector<Eigen::Vector2d> &first, 
+std::vector<Eigen::Vector2d> ConcatenatePointClouds(const std::vector<Eigen::Vector2d> &first, 
 const std::vector<Eigen::Vector2d> &second);
 std::vector<Eigen::Vector2d> RegisterPointClouds(const std::vector<Eigen::Vector2d> &source, 
-std::vector<Eigen::Vector2d> &target,const double &grid_size);
+const std::vector<Eigen::Vector2d> &target,const double &grid_size);
