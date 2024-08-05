@@ -106,9 +106,9 @@ const std::vector<Eigen::Vector2d> &source_pc, double grid_size)
     GridIndex query_index {static_cast<int>(query_point[0] / grid_size), 
     static_cast<int>(query_point[1] / grid_size)};
     // Iterate through the current cell and adjacent cells
-    for (int dx = -1; dx <= 1; ++dx) 
+    for (int dx = -2; dx <= 2; ++dx) 
     {
-      for (int dy = -1; dy <= 1; ++dy) 
+      for (int dy = -2; dy <= 2; ++dy) 
       {
         GridIndex neighbor_index {query_index.x + dx, query_index.y + dy};
         // Check if the neighbor cell exists in the grid map
@@ -131,10 +131,11 @@ const std::vector<Eigen::Vector2d> &source_pc, double grid_size)
   }
   return  std::make_tuple(source_correspondences,target_correspondences);
 }
-Eigen::Matrix3d ICP(const std::vector<Eigen::Vector2d> &source, 
+Eigen::Matrix3d ICP(const std::vector<Eigen::Vector2d> &source_, 
 const std::vector<Eigen::Vector2d> &target,const double &grid_size)
 {
-  int maximum_iteration = 500;
+  std::vector<Eigen::Vector2d> source = source_;
+  int maximum_iteration = 30;
   int iteration_counter = 0;
   double old_error = INFINITY;
   double error = INFINITY;
@@ -142,32 +143,27 @@ const std::vector<Eigen::Vector2d> &target,const double &grid_size)
   Eigen::Matrix3d current_tranformation_matrix = Eigen::Matrix3d::Identity();
   std::vector<Eigen::Vector2d> source_correspondences;
   std::vector<Eigen::Vector2d> target_correspondences;
-  std::vector<Eigen::Vector2d> transformed_pc;
   std::unordered_map<GridIndex,std::vector<Eigen::Vector2d>> grid_map = CreateGridMap(target,grid_size);
-  std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> nearest_neighbors = 
-    FindNearestNeighbors(grid_map,source,grid_size);
-  source_correspondences = std::get<0>(nearest_neighbors);
-  target_correspondences = std::get<1>(nearest_neighbors);
   while(true)
   {
     iteration_counter++;
+    std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> nearest_neighbors = 
+    FindNearestNeighbors(grid_map,source,grid_size);
+    source_correspondences = std::get<0>(nearest_neighbors);
+    target_correspondences = std::get<1>(nearest_neighbors);
     current_tranformation_matrix = ComputeTransformation(source_correspondences,target_correspondences);
     final_transformation_matrix = current_tranformation_matrix*final_transformation_matrix;
-    transformed_pc = ApplyTransformation(source_correspondences,current_tranformation_matrix);
-    error = ComputeError(target_correspondences,transformed_pc);
+    source= ApplyTransformation(source,current_tranformation_matrix);
+    error = ComputeError(target,source);
     if(error==old_error || iteration_counter==maximum_iteration)
     {
       return final_transformation_matrix;
+      
     }
     old_error = error;
+    // std::cout<<error<<std::endl;
     source_correspondences.clear();
     target_correspondences.clear();
-    std::tuple<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> nearest_neighbors = 
-    FindNearestNeighbors(grid_map,transformed_pc,grid_size);
-    source_correspondences = std::get<0>(nearest_neighbors);
-    target_correspondences = std::get<1>(nearest_neighbors);
-    transformed_pc.clear();
-    std::cout<<"error = "<<error<<std::endl;
   }
 }
 std::vector<Eigen::Vector2d> ConcatenatePointClouds(const std::vector<Eigen::Vector2d> &first, 
@@ -187,4 +183,36 @@ const std::vector<Eigen::Vector2d> &target,const double &grid_size)
   transformed_PC = ApplyTransformation(source,transformation_matrix);
   registered_PCs = ConcatenatePointClouds(target,transformed_PC);
   return registered_PCs;
+}
+std::vector<Eigen::Vector2d> RegisterPointClouds_KnownCorrespondences(const std::vector<Eigen::Vector2d> &source,
+const std::vector<Eigen::Vector2d> &target)
+{
+  std::vector<Eigen::Vector2d> transformed_PC;
+  std::vector<Eigen::Vector2d> registered_PCs;
+  Eigen::Matrix3d transformation_matrix = ComputeTransformation(source,target);
+  transformed_PC = ApplyTransformation(source,transformation_matrix);
+  registered_PCs = ConcatenatePointClouds(target,transformed_PC);
+  return registered_PCs;
+}
+std::vector<Eigen::Vector2d> DownSample(const std::vector<Eigen::Vector2d> &pcd, 
+const double &grid_size, const int &n_points)
+{
+  std::vector<Eigen::Vector2d> sampled_points;
+  std::unordered_map<GridIndex,int> grid2D;
+  for(const auto &query_point:pcd)
+  {
+    GridIndex query_index {static_cast<int>(query_point[0] / grid_size), 
+    static_cast<int>(query_point[1] / grid_size)};
+    if(grid2D.find(query_index)==grid2D.end())
+    {
+      grid2D[query_index]=1;
+      sampled_points.emplace_back(query_point);
+    }
+    else if(grid2D[query_index]< n_points)
+    {
+      grid2D[query_index]++;
+      sampled_points.emplace_back(query_point);
+    }
+  }
+  return sampled_points;
 }

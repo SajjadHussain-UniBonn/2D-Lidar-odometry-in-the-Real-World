@@ -44,3 +44,7 @@ std::vector<Eigen::Vector2d> ConcatenatePointClouds(const std::vector<Eigen::Vec
 const std::vector<Eigen::Vector2d> &second);
 std::vector<Eigen::Vector2d> RegisterPointClouds(const std::vector<Eigen::Vector2d> &source, 
 const std::vector<Eigen::Vector2d> &target,const double &grid_size);
+std::vector<Eigen::Vector2d> RegisterPointClouds_KnownCorrespondences(const std::vector<Eigen::Vector2d> &source,
+const std::vector<Eigen::Vector2d> &target);
+std::vector<Eigen::Vector2d> DownSample(const std::vector<Eigen::Vector2d> &pcd, const double &grid_size, const int &n_points);
+
