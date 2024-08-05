@@ -98,23 +98,27 @@ const std::vector<Eigen::Vector2d> &source_pc, double grid_size)
   std::vector<Eigen::Vector2d> source_correspondences;
   std::vector<Eigen::Vector2d> target_correspondences;
   double minimum_distance = INFINITY;
-  double distance = 0;
+  double distance = INFINITY;
   Eigen::Vector2d nearest_neighbor = Eigen::Vector2d::Zero();
-  for(const auto &query_point:source_pc)
+  bool neighbor_found = false;
+  for(const Eigen::Vector2d &query_point:source_pc)
   {
+    neighbor_found = false;
     minimum_distance = INFINITY;
     GridIndex query_index {static_cast<int>(query_point[0] / grid_size), 
     static_cast<int>(query_point[1] / grid_size)};
     // Iterate through the current cell and adjacent cells
-    for (int dx = -2; dx <= 2; ++dx) 
+    for (int dx = -1; dx <= 1; ++dx) 
     {
-      for (int dy = -2; dy <= 2; ++dy) 
+      for (int dy = -1; dy <= 1; ++dy) 
       {
         GridIndex neighbor_index {query_index.x + dx, query_index.y + dy};
         // Check if the neighbor cell exists in the grid map
         if (grid.find(neighbor_index) != grid.end()) 
         {
-          for (const auto &point : grid.at(neighbor_index)) 
+          neighbor_found = true;
+          std::vector<Eigen::Vector2d> list = grid.at(neighbor_index);
+          for (const auto &point : list) 
           {
             distance = (point - query_point).norm();
             if (distance < minimum_distance) 
@@ -126,8 +130,11 @@ const std::vector<Eigen::Vector2d> &source_pc, double grid_size)
         }
       }
     }
-    source_correspondences.emplace_back(query_point);
-    target_correspondences.emplace_back(nearest_neighbor);
+    if(neighbor_found)
+    {
+      source_correspondences.emplace_back(query_point);
+      target_correspondences.emplace_back(nearest_neighbor);
+    }
   }
   return  std::make_tuple(source_correspondences,target_correspondences);
 }
@@ -151,6 +158,10 @@ const std::vector<Eigen::Vector2d> &target,const double &grid_size)
     FindNearestNeighbors(grid_map,source,grid_size);
     source_correspondences = std::get<0>(nearest_neighbors);
     target_correspondences = std::get<1>(nearest_neighbors);
+    // viewCloud(source_correspondences);
+    // viewCloud(target_correspondences);
+    // std::cout<<source_correspondences.size()<<std::endl;
+    // std::cout<<target_correspondences.size()<<std::endl;
     current_tranformation_matrix = ComputeTransformation(source_correspondences,target_correspondences);
     final_transformation_matrix = current_tranformation_matrix*final_transformation_matrix;
     source= ApplyTransformation(source,current_tranformation_matrix);
