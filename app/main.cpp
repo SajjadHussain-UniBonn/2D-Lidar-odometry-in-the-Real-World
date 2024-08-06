@@ -11,8 +11,7 @@ int main()
     dataset::LaserScanDataset ls_dataset(data_root_dir);
     std::vector<Eigen::Vector2d> target; 
     std::vector<Eigen::Vector2d> source=ls_dataset[0];
-    std::vector<Eigen::Vector2d> transformed_PC;
-    Eigen::Matrix3d transformation_matrix;
+    // hyperparameters for the given data
     const double grid_size = 0.1;
     const double donsample_gridsize = 0.085;
     const int repetition_score = 1;
