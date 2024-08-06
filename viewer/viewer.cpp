@@ -142,7 +142,7 @@ Eigen::Matrix3d ICP(const std::vector<Eigen::Vector2d> &source_,
 const std::vector<Eigen::Vector2d> &target,const double &grid_size)
 {
   std::vector<Eigen::Vector2d> source = source_;
-  int maximum_iteration = 30;
+  int maximum_iteration = 13;
   int iteration_counter = 0;
   double old_error = INFINITY;
   double error = INFINITY;

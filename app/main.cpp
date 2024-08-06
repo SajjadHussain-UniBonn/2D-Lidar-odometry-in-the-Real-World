@@ -85,7 +85,7 @@ int main()
         std::vector<Eigen::Vector2d> registered_PCs= target;
         Eigen::Matrix3d transformation_matrix;
         const double grid_size = 0.2;
-        int total_scans = 300;
+        int total_scans = ls_dataset.size();
         std::cout<<"Progress of Registering Clouds"<<std::endl;
         for(int i=1;i<=total_scans;i++)
         {
@@ -121,15 +121,16 @@ int main()
         // std::vector<Eigen::Vector2d> registered_PCs;
         Eigen::Matrix3d transformation_matrix;
         const double grid_size = 0.1;
-        int total_scans = 500;
+        int total_scans = ls_dataset.size();
+        // int total_scans = 3000;
         std::cout<<"Progress of Registering Clouds"<<std::endl;
-        for(int i=1;i<=total_scans;i++)
+        for(int i=1;i<total_scans;i++)
         {
             target = ls_dataset[i];
             transformation_matrix = ICP(source,target,grid_size);
             source = ApplyTransformation(source,transformation_matrix);
             source.insert(source.end(),target.begin(),target.end());
-            source = DownSample(source,0.05,1);
+            source = DownSample(source,0.085,1);
             target.clear();
             std::cout<<"\r "<<i<<std::flush;
         }
