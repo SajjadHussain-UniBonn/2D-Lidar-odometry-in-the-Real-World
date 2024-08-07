@@ -10,6 +10,7 @@ int main()
     std::string data_root_dir = PROJECT_ROOT_DIR;
     //Read laserscan data directory in a list
     dataset::LaserScanDataset ls_dataset(data_root_dir);
+    //declare source and target point clouds
     std::vector<Eigen::Vector2d> target; 
     std::vector<Eigen::Vector2d> source=ls_dataset[0];
     // hyperparameters for the given data
@@ -22,10 +23,14 @@ int main()
     for(int i=1;i<total_scans;i++)
     {
         target = ls_dataset[i];
+        //run ICP for unknown correspondences
         LaserScanRegistration::ICP(source,target,grid_size);
+        // append new transformed point cloud in already_registered point clouds
         source.insert(source.end(),target.begin(),target.end());
+        // Down-sample registered point clouds
         source = LaserScanRegistration::DownSample(source,donsample_gridsize,repetition_score);
         target.clear();
+        // number of registered scans
         std::cout<<"\r "<<i<<std::flush;
     }
     std::cout<<std::endl;
