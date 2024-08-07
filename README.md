@@ -2,7 +2,7 @@
 - [2D Lidar odometry in the Real-World](#2d-lidar-odometry-in-the-real-world)
   - [Project description](#project-description)
   - [Implementation details](#implementation-details)
-  - [Installation](#installation)
+  - [Installer Details](#installation)
     - [Ubuntu](#ubuntu)
   - [Acknowledgements](#acknowledgements)
 
@@ -32,7 +32,9 @@
 
   Finally to build and excecute the project with CMake, following steps are required:  
     - make a directory(build) in the project folder(mkdir build)
+    - go to the build directory(cd build)
     - write configuration files to build (cmake ..)
+    - compile the code(make)
     - run the program(./app/main)  
   ## Acknowledgement
   Thanks to [contributors](https://github.com/SajjadHussain-UniBonn/2D-Lidar-odometry-in-the-Real-World/graphs/contributors) for making it happen.  
