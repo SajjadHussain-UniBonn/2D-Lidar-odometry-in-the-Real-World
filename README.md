@@ -2,7 +2,7 @@
 - [2D Lidar odometry in the Real-World](#2d-lidar-odometry-in-the-real-world)
   - [Project description](#project-description)
   - [Implementation details](#implementation-details-and-result)
-  - [Installer Details](#installation)
+  - [Installer Details](#installer-details)
     - [Ubuntu](#ubuntu)
   - [Acknowledgements](#acknowledgements)
 
@@ -20,7 +20,7 @@
   Moreover, the requirement was to register the scans at 10HZ which has been achieved.  
       
 
-  ## Istaller Details
+  ## Installer Details
   ### Ubuntu 
    First, you need to clone this project in any folder. You need two external libraries, Eigen3d and Open3d, to compile and execute the code successfully. Eigen3d can be installed using the following command:  
    - `sudo apt install libeigen3-dev` 
