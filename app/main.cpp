@@ -1,5 +1,6 @@
 #include <iostream>
 #include "dataloader.hpp"
+#include "scanRegistration.hpp"
 #include "viewer.hpp"
 #include <open3d/Open3D.h>
 
@@ -16,6 +17,7 @@ int main()
     const double donsample_gridsize = 0.085;
     const int repetition_score = 1;
     int total_scans = ls_dataset.size();
+    //Registration Process
     std::cout<<"Progress of Registering Clouds"<<std::endl;
     for(int i=1;i<total_scans;i++)
     {
@@ -29,7 +31,8 @@ int main()
     std::cout<<std::endl;
     std::cout<<"Size of registered Point Cloud"<<std::endl;
     std::cout<<source.size()<<std::endl;
-    LaserScanRegistration::viewCloud(source);
+    //View final map
+    viewCloud(source);
     std::cout<<"Process Completed"<<std::endl;
     return 0;
 }
