@@ -1,7 +1,7 @@
 # 2D Lidar odometry in the Real-World 
 - [2D Lidar odometry in the Real-World](#2d-lidar-odometry-in-the-real-world)
   - [Project description](#project-description)
-  - [Implementation details](#implementation-details)
+  - [Implementation details](#implementation-details-and-result)
   - [Installer Details](#installation)
     - [Ubuntu](#ubuntu)
   - [Acknowledgements](#acknowledgements)
@@ -36,5 +36,5 @@
     - write configuration files to build (cmake ..)
     - compile the code(make)
     - run the program(./app/main)  
-  ## Acknowledgement
+  ## Acknowledgements
   Thanks to [contributors](https://github.com/SajjadHussain-UniBonn/2D-Lidar-odometry-in-the-Real-World/graphs/contributors) for making it happen.  
