@@ -3,9 +3,12 @@
 #include "scanRegistration.hpp"
 #include "viewer.hpp"
 #include <open3d/Open3D.h>
+#include <chrono>
 
 int main()
-{   
+{  
+    // Get the starting time
+    auto start = std::chrono::high_resolution_clock::now();
     // Get data path through CMake_variable
     std::string data_root_dir = PROJECT_ROOT_DIR;
     //Read laserscan data directory in a list
@@ -33,9 +36,12 @@ int main()
         // number of registered scans
         std::cout<<"\r "<<i<<std::flush;
     }
+    //Get the end time
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
     std::cout<<std::endl;
-    std::cout<<"Size of registered Point Cloud"<<std::endl;
-    std::cout<<source.size()<<std::endl;
+    std::cout<<"Execution time = "<<duration.count()<<std::endl;
+    std::cout<<"Size of registered Point Cloud = "<<source.size()<<std::endl;
     //View final map
     viewCloud(source);
     std::cout<<"Process Completed"<<std::endl;
