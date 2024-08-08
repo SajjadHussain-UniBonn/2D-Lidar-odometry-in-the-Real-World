@@ -157,7 +157,7 @@ namespace LaserScanRegistration
   const std::vector<Eigen::Vector2d> &target,const double &grid_size)
   {
     //maximum iteration for convergence
-    int maximum_iteration = 13;
+    int maximum_iteration = 12;
     int iteration_counter = 0;
     double old_error = INFINITY;
     double error = INFINITY;
